@@ -1,0 +1,133 @@
+<html>
+
+<head>
+    <style>
+        canvas {
+            border: #333 10px solid;
+        }
+    </style>
+
+    <style></style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1013.0" data-gr-ext-installed="">
+    <canvas id="myCanvas" width="550px" height="350px"></canvas>
+
+    <label for="id">ID</label>
+    <input type="text" id="id" />
+    <label for="color">Color</label>
+    <input type="text" id="color" />
+    <button onclick="connectWs()">Login</button>
+
+    <script language="javascript" type="text/javascript">
+        let id;
+        let color = "gray";
+        let inputSocket;
+        let outputSocket;
+        function connectWs() {
+            console.log('')
+            // set id and color
+            id = document.getElementById("id").value
+            color = document.getElementById("color").value
+            animate()
+            // Input session
+            inputSocket = new WebSocket("ws://localhost:8080/game-input");
+            inputSocket.onopen = function () {
+                console.log("Status: Connected to input server\n");
+                if (inputSocket !== undefined && inputSocket.readyState === 1) {
+                payload = JSON.stringify({ id: id, x: deltaX, y: deltaY, color });
+                inputSocket.send(payload);
+            }
+            };
+            
+
+            outputSocket = new WebSocket("ws://localhost:8081/game-output");
+            outputSocket.onopen = function () {
+                console.log("Status: Connected to output server\n");
+                payload = JSON.stringify({ id: id })
+                outputSocket.send(payload);
+            };
+            outputSocket.onmessage = function (e) {
+                respObj = JSON.parse(e.data);
+                player.set(respObj.id, respObj);
+            };
+        }
+
+        let player = new Map();
+        var canvas = document.querySelector("#myCanvas");
+        var context = canvas.getContext("2d");
+
+        var deltaX = 0;
+        var deltaY = 0;
+
+        window.addEventListener("keydown", keysPressed, false);
+        window.addEventListener("keyup", keysReleased, false);
+
+        var keys = [];
+
+        function keysPressed(e) {
+            // store an entry for every key pressed
+            keys[e.keyCode] = true;
+
+            // left
+            if (keys[37]) {
+                deltaX -= 2;
+            }
+
+            // right
+            if (keys[39]) {
+                deltaX += 2;
+            }
+
+            // down
+            if (keys[38]) {
+                deltaY -= 2;
+            }
+
+            // up
+            if (keys[40]) {
+                deltaY += 2;
+            }
+
+            if (inputSocket !== undefined && inputSocket.readyState === 1) {
+                payload = JSON.stringify({ id: id, x: deltaX, y: deltaY, color });
+                inputSocket.send(payload);
+            }
+        }
+
+        function keysReleased(e) {
+            // mark keys that were released
+            keys[e.keyCode] = false;
+        }
+
+        function drawAvartar(x, y, color) {
+            // the triangle
+            context.beginPath();
+            context.rect(20 + x, 20 + y, 50, 50);
+            context.closePath();
+
+            // the outline
+            context.lineWidth = 10;
+            context.strokeStyle = "rgba(102, 102, 102, 1)";
+            context.stroke();
+
+            // the fill color
+            context.fillStyle = color;
+            context.fill();
+            context.fillText(name, x + (50 / 2), y + (50 / 2));
+        }
+
+        function animate() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            player.forEach(function (value, key) {
+                drawAvartar(value.x, value.y, value.color);
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();</script>
+
+
+</body>
+
+</html>

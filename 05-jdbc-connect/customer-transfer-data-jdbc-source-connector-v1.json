@@ -1,0 +1,32 @@
+{
+  "name": "customer-transfer-data-jdbc-source-connector-v1",
+  "config": {
+    "task.max": "1",
+    "value.converter.schema.registry.url": "http://188.166.225.204:8081",
+    "db.timezome": "Asia/Bangkok",
+    "table.type": "TABLE",
+    "key.converter.schema.registry.url": "http://188.166.225.204:8081",
+    "name": "customer-transfer-data-jdbc-source-connector-v1",
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "key.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "transforms": "createKey, setSchema",
+    "transforms.createKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.createKey.fields": "id",
+    "transforms.setSchema.type": "org.apache.kafka.connect.transforms.SetSchemaMetadata$Value",
+    "transforms.setSchema.schema.name": "CustomerTransferRecords",
+    "connection.url": "jdbc:mysql://188.166.225.204:3306/kafkaconnect",
+    "connection.user": "root",
+    "connection.password": "admin123",
+    "numeric.precision.mapping": "true",
+    "numeric.mapping": "best_fit",
+    "dialect.name": "MySqlDatabaseDialect",
+    "mode": "incrementing",
+    "incrementing.column.name": "id",
+    "timestamp.column.name": "",
+    "query": "select * from customer",
+    "poll.interval.ms": "5000",
+    "batch.max.rows": "5",
+    "topic.prefix": "customer-table-transfer-data"
+  }
+}

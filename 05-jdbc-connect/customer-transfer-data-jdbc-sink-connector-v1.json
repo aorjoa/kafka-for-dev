@@ -1,0 +1,22 @@
+
+{
+    "name": "customer-transfer-data-jdbc-sink-connector-v1",
+    "config": {
+      "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+      "task.max": "1",
+      "topics": "customer-table-transfer-data",
+      "table.name.format": "customer",
+      "key.converter": "io.confluent.connect.avro.AvroConverter",
+      "value.converter": "io.confluent.connect.avro.AvroConverter",
+      "key.converter.schema.registry.url": "http://188.166.225.204:8081",
+      "value.converter.schema.registry.url": "http://188.166.225.204:8081",
+      "connection.url": "jdbc:mysql://188.166.225.204:3306/kafkaconnectsink",
+      "connection.user": "root",
+      "connection.password": "admin123",
+      "insert.mode": "upsert",
+      "batch.size": "2",
+      "pk.mode": "record_value",
+      "pk.fields": "id",
+      "db.timezone": "Asia/Bangkok"
+    }
+  }
